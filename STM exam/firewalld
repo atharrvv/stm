@@ -1,0 +1,182 @@
+Install firewall for (redhat and centos)
+      yum install firewalld -y
+      or 
+      dnf install firewalld -y
+
+  systemctl status firewalld
+  systemctl start firewalld
+==============================================================================================================================================
+- to get the current state of the firewalld services
+     firewall-cmd --state   
+
+==============================================================================================================================================
+
+-  get the all security zones
+     firewall-cmd --get-zones
+   output:    dmz public drop external internal block 
+
+
+==============================================================================================================================================
+
+-  get default zone files
+     ls /usr/lib/firewalld/zones
+  output:  block.xml  dmz.xml  drop.xml  external.xml  home.xml  internal.xml  public.xml  trusted.xml  work.xml
+
+==============================================================================================================================================
+
+-  get the default zones 
+     firewall-cmd --get-default-zone
+   output:  public
+
+==============================================================================================================================================
+
+-  listing firewall rules for the default zones
+      firewall-cmd --list-all
+    
+   if you want to see the rules for the specific zone
+      firewall-cmd --zone=dmz --list-all
+
+======================================================================================================================================================================
+
+ -  if you want to connect the interface to  'dmz'  from public then the interface will move from 'public to dmz' and dmz will active
+    [will  only change for runtime]
+       -   firewall-cmd --zone=dmz --change-interface=ens33
+       -   firewall-cmd --zone=dmz --add-interface=ens33
+       -   firewall-cmd --zone=dmz --remove-interface=ens33
+       -   firewall-cmd --zone-dmz --list-interfaces
+
+=======================================================================================================================================================================
+
+ -  to make it permanent
+       firewall-cmd --zone=dmz --change-interface=ens33 --permanent
+       firewall-cmd --reload
+
+========================================================================================================================================================================
+
+ -  now to set new zone (and zone name) as default zone
+      firewall-cmd --set-default-zone=hpcsa --permanent
+      firewall-cmd --reload
+
+=========================================================================================================================================================================
+
+  -  to verify it
+        firewall-cmd --new-zone=hpcsa --permanent
+        firewall-cmd --reload
+
+========================================================================================================================================================================
+
+   -  to create a new zone we can use the --new-zone-option
+          firewall-cmd --new-zone=hpcsa --permanent
+          firewall-cmd --reload
+
+=========================================================================================================================================================================
+
+ -   to activate use below command
+       firewalld --add-interface=ens33 --zone=hpcsa --permanent
+
+===========================================================================================================================================================================
+
+ -  to delete
+     firewall-cmd --delete-zone=hpcsa --permanent
+     firewall-cmd --reload
+
+========================================================================================================================================================================
+
+-  to check all the services to add in public zone
+     firewall-cmd --get-services
+
+NOTE = all the services have their individual xml files, are located /usr.lib/firewalld/services
+
+=========================================================================================================================================================================
+
+ -  to add any services
+
+  -  firewall-cmd --zone=public --add-service=ssh --permanent
+      or
+  -  firewall-cmd --zone=public --add-service={http,ssh,https} --permanent
+  -  firewall-cmd --reload
+
+==========================================================================================================================================================================
+
+-   if you want to deny the access of ssh on the machine , so you just need to remove ssh servivces from
+        the public (or current) zone
+        firewall-cmd --zone=public --remove-service=ssh
+        firewall-cmd --reload
+        firewall-cmd --zone=public --list-all
+ 
+==========================================================================================================================================================================
+
+ -  to add port number
+     firewall-cmd --zone=public --add-port=2020/tcp --permanent
+           or
+     firewall-cmd --zone=public --add-port=8080/tcp --add-port=8443/tcp --permanent    ....................   to multiple port
+     firewall-cmd --reload
+     firewall-cmd --list-all
+
+============================================================================================================================================================================
+
+ -  to remove the port number
+    firewall-cmd --zone=public --remove-port=8080/tcp --permanent
+    firewall-cmd --reload
+    firewall-cmd --zone=public --list-all
+
+============================================================================================================================================================================
+
+
+ -  firewall logs we can see by the follwing command
+      cd /var/log
+      cat firewalld
+
+=============================================================================================================================================================================
+
+ - syntax for adding the rich rule by using  --add-rich-rule
+      firewall-cmd --zone=dmz --add-rich-rule='rule family="ipv4" source address="192.168.144.134" reject' --permanent
+      firewall-cmd --reload
+      firewall-cmd --zone=dmz --list-all
+
+      firewall-cmd --zone=dmz --add-rich-rule='rule family="ipv4" source address="192.168.144.135/24" service name="ssh" reject' --permanent
+      firewall-cmd --reload
+      firewall-cmd --zone=dmz --list-all
+
+==============================================================================================================================================================================
+
+   - syntax for removing the rule
+      firewall-cmd --zone=dmz --remove-rich-rule='rule family="ipv4" source address="192.168.144.135/24" reject' --permanent
+      firewall-cmd --reload
+      firewall-cmd --zone=dmz --list-all 
+
+================================================================================================================================================================================
+
+ - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
